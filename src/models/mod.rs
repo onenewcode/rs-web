@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use sea_orm::entity::prelude::*;
-use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
 #[sea_orm(table_name = "data_pack_banner_popup")]
