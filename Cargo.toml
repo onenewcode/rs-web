@@ -3,8 +3,37 @@ name = "rs-web"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
+[workspace]
+members = [".", "api", "entity", "migration", "seeder", "service", "uitls"]
+[workspace.dependencies]
+anyhow = "1.0.100"
+api = { path = "api" }
 axum = "0.8.5"
-dotenvy = "0.15.7"
+chrono = "0.4.42"
+entity = { path = "entity" }
+migration = { path = "migration" }
+opentelemetry = "0.31.0"
+opentelemetry-stdout = "0.31.0"
+opentelemetry_sdk = "0.31.0"
 redis = { version = "0.32.6", features = ["tokio-comp"] }
-sea-orm = { git="https://github.com/SeaQL/sea-orm.git",branch="master"}
+sea-orm = { git = "https://github.com/SeaQL/sea-orm.git", branch = "master" }
+sea-orm-migration = { git = "https://github.com/SeaQL/sea-orm.git", branch = "master" }
+seeder = { path = "seeder" }
+serde = "1.0.228"
+serde_json = "1.0.145"
+service = { path = "service" }
+tera = "1.20.0"
+tokio =  "1"
+tower = "0.5.2"
+tower-cookies = "0.11.0"
+tower-http = "0.6.6"
+tracing = "0.1.41"
+tracing-appender = "0.2"
+tracing-opentelemetry = "0.32.0"
+# 配置和管理 tracing 所产生的日志和追踪数据的收集、格式化以及输出等操作
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+uitls = { path = "uitls" }
+
+[dependencies]
+api = { path = "api" }
+tokio =  "1"

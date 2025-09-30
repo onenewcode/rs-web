@@ -1,0 +1,18 @@
+[package]
+name = "service"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+mock = ["sea-orm/mock"]
+
+[dependencies]
+entity.workspace = true
+sea-orm = { workspace = true, features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["full"] }
+
+[[test]]
+name = "mock"
+required-features = ["mock"]
