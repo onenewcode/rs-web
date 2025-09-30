@@ -3,21 +3,17 @@ name = "axum-service"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+mock = ["sea-orm/mock"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 
 [dependencies]
 entity = { path = "../entity" }
-
-
+sea-orm = { workspace = true, features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"] }
 
 [dev-dependencies]
-tokio = { workspace = true,  features = ["full"] }
-sea-orm = {  workspace = true,features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"]}
-
-
-[features]
-mock = ["sea-orm/mock"]
+tokio = { workspace = true, features = ["full"] }
 
 [[test]]
 name = "mock"

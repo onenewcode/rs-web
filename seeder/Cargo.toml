@@ -3,7 +3,6 @@ name = "seeder"
 version = "0.1.0"
 edition = "2024"
 
-
 [lib]
 name = "seeder"
 path = "src/lib.rs"
@@ -12,4 +11,4 @@ path = "src/lib.rs"
 async-std = { version = "1", features = ["attributes", "tokio1"] }
 entity = { path = "../entity" }
 migration = { path = "../migration" }
-sea-orm = {  workspace = true,features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"]}
+sea-orm-migration= { workspace = true }

@@ -3,19 +3,18 @@ name = "axum-api"
 version = "0.1.0"
 edition = "2024"
 
-
 [dependencies]
+anyhow = { workspace = true }
+axum = { workspace = true }
 axum-service = { path = "../service" }
-tokio = { workspace = true,  features = ["full"] }
-axum = { workspace = true}
-tower = { workspace = true}
-tower-http = { workspace = true, features = ["fs"] }
-tower-cookies = { workspace = true}
-anyhow = { workspace = true}
-dotenvy = { workspace = true}
-serde = { workspace = true}
-serde_json = { workspace = true}
-tera = { workspace = true}
-tracing-subscriber = { workspace = true, features = ["env-filter"] }
+dotenvy = { workspace = true }
 entity = { path = "../entity" }
 migration = { path = "../migration" }
+serde = { workspace = true }
+serde_json = { workspace = true}
+tera = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+tower = { workspace = true }
+tower-cookies = { workspace = true }
+tower-http = { workspace = true, features = ["fs"] }
+tracing-subscriber = { workspace = true, features = ["env-filter"] }

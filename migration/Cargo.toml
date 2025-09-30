@@ -2,8 +2,6 @@
 name = "migration"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.85.0"
-publish = false
 
 [lib]
 name = "migration"
@@ -11,4 +9,4 @@ path = "src/lib.rs"
 
 [dependencies]
 async-std = { version = "1", features = ["attributes", "tokio1"] }
-sea-orm = {  workspace = true,features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"]}
+sea-orm-migration = { workspace = true }
