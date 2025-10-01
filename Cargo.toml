@@ -13,6 +13,7 @@ chrono = "0.4.42"
 dotenvy = "0.15.7"
 redis = { version = "0.32.6", features = ["tokio-comp"] }
 sea-orm = { git = "https://github.com/SeaQL/sea-orm.git", branch = "master" }
+sea-orm-migration = { git = "https://github.com/SeaQL/sea-orm.git", branch = "master" }
 serde = "1.0.228"
 serde_json = "1.0.145"
 tera = "1.20.0"
@@ -22,6 +23,5 @@ tower-cookies = "0.11.0"
 tower-http = "0.6.6"
 tracing = "0.1.41"
 tracing-subscriber = "0.3.20"
-sea-orm-migration ={ git = "https://github.com/SeaQL/sea-orm.git", branch = "master" }
 [dependencies]
 axum-api = { path = "api" }

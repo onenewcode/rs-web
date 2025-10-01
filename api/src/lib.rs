@@ -19,7 +19,7 @@ use std::env;
 use tera::Tera;
 use tower_cookies::{CookieManagerLayer, Cookies};
 use tower_http::services::ServeDir;
-
+use tracing::*;
 #[tokio::main]
 async fn start() -> anyhow::Result<()> {
     unsafe {
@@ -27,7 +27,14 @@ async fn start() -> anyhow::Result<()> {
     }
     tracing_subscriber::fmt::init();
 
-    dotenvy::dotenv().ok();
+    match dotenvy::dotenv() {
+        Ok(_) => info!("Successfully loaded .env file"),
+        Err(e) => {
+            error!("Failed to load .env file: {}", e);
+            std::process::exit(1);
+        }
+    }
+
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL is not set in .env file");
     let host = env::var("HOST").expect("HOST is not set in .env file");
     let port = env::var("PORT").expect("PORT is not set in .env file");

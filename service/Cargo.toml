@@ -6,8 +6,6 @@ edition = "2024"
 [features]
 mock = ["sea-orm/mock"]
 
-
-
 [dependencies]
 entity = { path = "../entity" }
 sea-orm = { workspace = true, features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"] }

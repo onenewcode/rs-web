@@ -349,6 +349,7 @@ dependencies = [
  "tower",
  "tower-cookies",
  "tower-http",
+ "tracing",
  "tracing-subscriber",
 ]
 

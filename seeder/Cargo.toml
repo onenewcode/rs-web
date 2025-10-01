@@ -11,4 +11,4 @@ path = "src/lib.rs"
 async-std = { version = "1", features = ["attributes", "tokio1"] }
 entity = { path = "../entity" }
 migration = { path = "../migration" }
-sea-orm-migration= { workspace = true }
+sea-orm-migration = { workspace = true }
