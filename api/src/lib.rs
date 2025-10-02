@@ -43,7 +43,10 @@ async fn start() -> anyhow::Result<()> {
     let conn = Database::connect(db_url)
         .await
         .expect("Database connection failed");
-    Migrator::up(&conn, None).await.unwrap();
+    // 构建数据库表
+    migration::Migrator::up(&conn, None).await.unwrap();
+    // 插入数据
+    seeder::Migrator::up(&conn, None).await.unwrap();
 
     let templates = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*"))
         .expect("Tera initialization failed");

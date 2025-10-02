@@ -10,6 +10,7 @@ axum-service = { path = "../service" }
 dotenvy = { workspace = true }
 entity = { path = "../entity" }
 migration = { path = "../migration" }
+seeder = { path = "../seeder" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tera = { workspace = true }
