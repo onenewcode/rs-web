@@ -13,7 +13,7 @@ use axum_service::{
 };
 use entity::post;
 use flash::{PostResponse, get_flash_cookie, post_response};
-use migration::{Migrator, MigratorTrait};
+use migration::MigratorTrait;
 use serde::{Deserialize, Serialize};
 use std::env;
 use tera::Tera;

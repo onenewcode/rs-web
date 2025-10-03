@@ -1,7 +1,7 @@
-use chrono::{DateTime, Duration, Utc};
+use chrono::{Duration, Utc};
 use entity::banner_popup::*;
-use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
-use sea_orm_migration::{prelude::*, schema::*};
+use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

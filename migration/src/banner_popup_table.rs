@@ -1,4 +1,3 @@
-use sea_orm::prelude::DateTimeUtc;
 use sea_orm_migration::{prelude::*, schema::*};
 
 #[derive(DeriveMigrationName)]
