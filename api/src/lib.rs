@@ -11,7 +11,7 @@ use axum_service::{
     Mutation as MutationCore, Query as QueryCore,
     sea_orm::{Database, DatabaseConnection},
 };
-use entity::post;
+use entity::{post, banner_popup};
 use flash::{PostResponse, get_flash_cookie, post_response};
 use migration::MigratorTrait;
 use serde::{Deserialize, Serialize};
@@ -20,6 +20,7 @@ use tera::Tera;
 use tower_cookies::{CookieManagerLayer, Cookies};
 use tower_http::services::ServeDir;
 use tracing::*;
+
 #[tokio::main]
 async fn start() -> anyhow::Result<()> {
     unsafe {
@@ -55,9 +56,13 @@ async fn start() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/", get(list_posts).post(create_post))
-        .route("/{id}", get(edit_post).post(update_post))
-        .route("/new", get(new_post))
-        .route("/delete/{id}", post(delete_post))
+        .route("/posts/{id}", get(edit_post).post(update_post))
+        .route("/posts/new", get(new_post))
+        .route("/posts/delete/{id}", post(delete_post))
+        .route("/banner-popups", get(list_banner_popups).post(create_banner_popup))
+        .route("/banner-popups/{id}", get(edit_banner_popup).post(update_banner_popup))
+        .route("/banner-popups/new", get(new_banner_popup))
+        .route("/banner-popups/delete/{id}", post(delete_banner_popup))
         .nest_service(
             "/static",
             get_service(ServeDir::new(concat!(
@@ -209,6 +214,124 @@ async fn delete_post(
     let data = FlashData {
         kind: "success".to_owned(),
         message: "Post successfully deleted".to_owned(),
+    };
+
+    Ok(post_response(&mut cookies, data))
+}
+
+// Banner Popup handlers
+
+async fn list_banner_popups(
+    state: State<AppState>,
+    Query(params): Query<Params>,
+    cookies: Cookies,
+) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let page = params.page.unwrap_or(1);
+    let items_per_page = params.posts_per_page.unwrap_or(5); // Reuse posts_per_page parameter
+
+    let (banner_popups, num_pages) = QueryCore::find_banner_popups_in_page(&state.conn, page, items_per_page)
+        .await
+        .expect("Cannot find banner popups in page");
+
+    let mut ctx = tera::Context::new();
+    ctx.insert("banner_popups", &banner_popups);
+    ctx.insert("page", &page);
+    ctx.insert("items_per_page", &items_per_page);
+    ctx.insert("num_pages", &num_pages);
+
+    if let Some(value) = get_flash_cookie::<FlashData>(&cookies) {
+        ctx.insert("flash", &value);
+    }
+
+    let body = state
+        .templates
+        .render("banner_popups/index.html.tera", &ctx)
+        .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+    Ok(Html(body))
+}
+
+async fn new_banner_popup(state: State<AppState>) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let ctx = tera::Context::new();
+    let body = state
+        .templates
+        .render("banner_popups/new.html.tera", &ctx)
+        .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+    Ok(Html(body))
+}
+
+async fn create_banner_popup(
+    state: State<AppState>,
+    mut cookies: Cookies,
+    form: Form<banner_popup::Model>,
+) -> Result<PostResponse, (StatusCode, &'static str)> {
+    let form = form.0;
+
+    MutationCore::create_banner_popup(&state.conn, form)
+        .await
+        .expect("could not insert banner popup");
+
+    let data = FlashData {
+        kind: "success".to_owned(),
+        message: "Banner popup successfully added".to_owned(),
+    };
+
+    Ok(post_response(&mut cookies, data))
+}
+
+async fn edit_banner_popup(
+    state: State<AppState>,
+    Path(id): Path<i32>,
+) -> Result<Html<String>, (StatusCode, &'static str)> {
+    let banner_popup: banner_popup::Model = QueryCore::find_banner_popup_by_id(&state.conn, id)
+        .await
+        .expect("could not find banner popup")
+        .unwrap_or_else(|| panic!("could not find banner popup with id {id}"));
+
+    let mut ctx = tera::Context::new();
+    ctx.insert("banner_popup", &banner_popup);
+
+    let body = state
+        .templates
+        .render("banner_popups/edit.html.tera", &ctx)
+        .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Template error"))?;
+
+    Ok(Html(body))
+}
+
+async fn update_banner_popup(
+    state: State<AppState>,
+    Path(id): Path<i32>,
+    mut cookies: Cookies,
+    form: Form<banner_popup::Model>,
+) -> Result<PostResponse, (StatusCode, String)> {
+    let form = form.0;
+
+    MutationCore::update_banner_popup_by_id(&state.conn, id, form)
+        .await
+        .expect("could not edit banner popup");
+
+    let data = FlashData {
+        kind: "success".to_owned(),
+        message: "Banner popup successfully updated".to_owned(),
+    };
+
+    Ok(post_response(&mut cookies, data))
+}
+
+async fn delete_banner_popup(
+    state: State<AppState>,
+    Path(id): Path<i32>,
+    mut cookies: Cookies,
+) -> Result<PostResponse, (StatusCode, &'static str)> {
+    MutationCore::delete_banner_popup(&state.conn, id)
+        .await
+        .expect("could not delete banner popup");
+
+    let data = FlashData {
+        kind: "success".to_owned(),
+        message: "Banner popup successfully deleted".to_owned(),
     };
 
     Ok(post_response(&mut cookies, data))
