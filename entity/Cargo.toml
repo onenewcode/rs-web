@@ -10,6 +10,7 @@ name = "entity"
 path = "src/lib.rs"
 
 [dependencies]
+chrono = { workspace = true }
 
 sea-orm = { workspace = true, features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"] }
 serde = { version = "1", features = ["derive"] }
