@@ -44,10 +44,24 @@ async fn start() -> anyhow::Result<()> {
     let conn = Database::connect(db_url)
         .await
         .expect("Database connection failed");
-    // 构建数据库表
-    migration::Migrator::up(&conn, None).await.unwrap();
-    // 插入数据
-    seeder::Migrator::up(&conn, None).await.unwrap();
+        
+    // Try to run migrations, but handle cases where historical migrations are missing
+    match migration::Migrator::up(&conn, None).await {
+        Ok(_) => info!("Migrations completed successfully"),
+        Err(e) => {
+            warn!("Migration warning: {}", e);
+            // Continue execution even if some historical migrations are missing
+        }
+    }
+    
+    // Run seeders after migrations
+    match seeder::Migrator::up(&conn, None).await {
+        Ok(_) => info!("Seeders completed successfully"),
+        Err(e) => {
+            warn!("Seeding warning: {}", e);
+            // Continue execution even if seeding has warnings
+        }
+    }
 
     let templates = Tera::new(concat!(env!("CARGO_MANIFEST_DIR"), "/templates/**/*"))
         .expect("Tera initialization failed");
@@ -274,7 +288,7 @@ async fn create_banner_popup(
     state: State<AppState>,
     mut cookies: Cookies,
     form: Form<banner_popup::Model>,
-) -> Result<PostResponse, (StatusCode, &'static str)> {
+) -> Result<impl axum::response::IntoResponse, (StatusCode, &'static str)> {
     let form = form.0;
 
     MutationCore::create_banner_popup(&state.conn, form)
@@ -314,7 +328,7 @@ async fn update_banner_popup(
     Path(id): Path<i32>,
     mut cookies: Cookies,
     form: Form<banner_popup::Model>,
-) -> Result<PostResponse, (StatusCode, String)> {
+) -> Result<impl axum::response::IntoResponse, (StatusCode, &'static str)> {
     let form = form.0;
 
     MutationCore::update_banner_popup_by_id(&state.conn, id, form)

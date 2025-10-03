@@ -1,4 +1,4 @@
-use ::entity::{post, post::Entity as Post};
+use ::entity::{banner_popup, banner_popup::Entity as BannerPopup, post, post::Entity as Post};
 use sea_orm::*;
 
 pub struct Query;
@@ -28,8 +28,8 @@ impl Query {
     pub async fn find_banner_popup_by_id(
         db: &DbConn,
         id: i32,
-    ) -> Result<Option<entity::banner_popup::Model>, DbErr> {
-        entity::banner_popup::Entity::find_by_id(id).one(db).await
+    ) -> Result<Option<banner_popup::Model>, DbErr> {
+        BannerPopup::find_by_id(id).one(db).await
     }
 
     /// If ok, returns (banner popup models, num pages).
@@ -37,10 +37,10 @@ impl Query {
         db: &DbConn,
         page: u64,
         items_per_page: u64,
-    ) -> Result<(Vec<entity::banner_popup::Model>, u64), DbErr> {
+    ) -> Result<(Vec<banner_popup::Model>, u64), DbErr> {
         // Setup paginator
-        let paginator = entity::banner_popup::Entity::find()
-            .order_by_asc(entity::banner_popup::Column::Id)
+        let paginator = BannerPopup::find()
+            .order_by_asc(banner_popup::Column::Id)
             .paginate(db, items_per_page);
         let num_pages = paginator.num_pages().await?;
 
