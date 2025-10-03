@@ -1,0 +1,68 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="row">
+  <h4>New Banner Popup</h4>
+  <form action="/banner-popups" method="post">
+    <div class="twelve columns">
+      <label for="url">URL</label>
+      <input
+        type="text"
+        placeholder="enter url"
+        name="url"
+        id="url"
+        value=""
+        autofocus
+        class="u-full-width"
+      />
+      
+      <label for="img">Image URL (optional)</label>
+      <input
+        type="text"
+        placeholder="enter image url"
+        name="img"
+        id="img"
+        value=""
+        class="u-full-width"
+      />
+      
+      <label for="start_time">Start Time</label>
+      <input
+        type="datetime-local"
+        name="start_time"
+        id="start_time"
+        value=""
+        class="u-full-width"
+      />
+      
+      <label for="end_time">End Time</label>
+      <input
+        type="datetime-local"
+        name="end_time"
+        id="end_time"
+        value=""
+        class="u-full-width"
+      />
+      
+      <label for="status">Status</label>
+      <select name="status" id="status" class="u-full-width">
+        <option value="0">Inactive</option>
+        <option value="1">Active</option>
+      </select>
+      
+      <input type="hidden" name="is_delete" value="false" />
+      <input type="hidden" name="create_time" value="{{ now() | date(format="%Y-%m-%dT%H:%M:%SZ") }}" />
+      <input type="hidden" name="update_time" value="{{ now() | date(format="%Y-%m-%dT%H:%M:%SZ") }}" />
+    </div>
+    <div class="twelve columns">
+      <div class="two columns">
+        <a href="/banner-popups">
+          <input type="button" value="cancel" />
+        </a>
+      </div>
+      <div class="eight columns"></div>
+      <div class="two columns">
+        <input type="submit" value="save banner popup" />
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock content %}

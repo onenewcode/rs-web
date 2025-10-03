@@ -1,0 +1,58 @@
+{% extends "layout.html.tera" %} {% block content %}
+<div class="container">
+  <p><!--Nothing to see here --></p>
+  <h1>Banner Popups</h1>
+  {% if flash %}
+  <small class="field-{{ flash.kind }}-flash">
+    {{ flash.message }}
+  </small>
+  {% endif %}
+  <table>
+    <tbody>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>URL</th>
+          <th>Image</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      {% for banner_popup in banner_popups %}
+      <tr class="banner-popup" onclick="window.location='/banner-popups/{{ banner_popup.id }}';">
+        <td>{{ banner_popup.id }}</td>
+        <td>{{ banner_popup.url }}</td>
+        <td>{{ banner_popup.img | default(value="None") }}</td>
+        <td>{{ banner_popup.start_time }}</td>
+        <td>{{ banner_popup.end_time }}</td>
+        <td>{{ banner_popup.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td></td>
+        <td>
+          {% if page == 1 %} Previous {% else %}
+          <a href="/banner-popups?page={{ page - 1 }}&posts_per_page={{ items_per_page }}"
+            >Previous</a
+          >
+          {% endif %} | {% if page == num_pages %} Next {% else %}
+          <a href="/banner-popups?page={{ page + 1 }}&posts_per_page={{ items_per_page }}"
+            >Next</a
+          >
+          {% endif %}
+        </td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="twelve columns">
+    <a href="/banner-popups/new">
+      <input type="button" value="add banner popup" />
+    </a>
+  </div>
+</div>
+{% endblock content %}
