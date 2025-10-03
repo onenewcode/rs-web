@@ -1,7 +1,7 @@
 pub use sea_orm_migration::prelude::*;
 
-mod post_seeder;
 mod banner_popup_seeder;
+mod post_seeder;
 
 pub struct Migrator;
 
