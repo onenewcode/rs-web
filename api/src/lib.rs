@@ -11,7 +11,7 @@ use axum_service::{
     Mutation as MutationCore, Query as QueryCore,
     sea_orm::{Database, DatabaseConnection},
 };
-use entity::{post, banner_popup};
+use entity::{banner_popup, post};
 use flash::{PostResponse, get_flash_cookie, post_response};
 use migration::MigratorTrait;
 use serde::{Deserialize, Serialize};
@@ -59,8 +59,14 @@ async fn start() -> anyhow::Result<()> {
         .route("/posts/{id}", get(edit_post).post(update_post))
         .route("/posts/new", get(new_post))
         .route("/posts/delete/{id}", post(delete_post))
-        .route("/banner-popups", get(list_banner_popups).post(create_banner_popup))
-        .route("/banner-popups/{id}", get(edit_banner_popup).post(update_banner_popup))
+        .route(
+            "/banner-popups",
+            get(list_banner_popups).post(create_banner_popup),
+        )
+        .route(
+            "/banner-popups/{id}",
+            get(edit_banner_popup).post(update_banner_popup),
+        )
         .route("/banner-popups/new", get(new_banner_popup))
         .route("/banner-popups/delete/{id}", post(delete_banner_popup))
         .nest_service(
@@ -229,9 +235,10 @@ async fn list_banner_popups(
     let page = params.page.unwrap_or(1);
     let items_per_page = params.posts_per_page.unwrap_or(5); // Reuse posts_per_page parameter
 
-    let (banner_popups, num_pages) = QueryCore::find_banner_popups_in_page(&state.conn, page, items_per_page)
-        .await
-        .expect("Cannot find banner popups in page");
+    let (banner_popups, num_pages) =
+        QueryCore::find_banner_popups_in_page(&state.conn, page, items_per_page)
+            .await
+            .expect("Cannot find banner popups in page");
 
     let mut ctx = tera::Context::new();
     ctx.insert("banner_popups", &banner_popups);
@@ -251,7 +258,9 @@ async fn list_banner_popups(
     Ok(Html(body))
 }
 
-async fn new_banner_popup(state: State<AppState>) -> Result<Html<String>, (StatusCode, &'static str)> {
+async fn new_banner_popup(
+    state: State<AppState>,
+) -> Result<Html<String>, (StatusCode, &'static str)> {
     let ctx = tera::Context::new();
     let body = state
         .templates

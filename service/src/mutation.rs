@@ -50,9 +50,9 @@ impl Mutation {
     pub async fn delete_all_posts(db: &DbConn) -> Result<DeleteResult, DbErr> {
         Post::delete_many().exec(db).await
     }
-    
+
     // Banner Popup mutations
-    
+
     pub async fn create_banner_popup(
         db: &DbConn,
         form_data: entity::banner_popup::Model,
@@ -77,11 +77,12 @@ impl Mutation {
         id: i32,
         form_data: entity::banner_popup::Model,
     ) -> Result<entity::banner_popup::Model, DbErr> {
-        let banner_popup: entity::banner_popup::ActiveModel = entity::banner_popup::Entity::find_by_id(id)
-            .one(db)
-            .await?
-            .ok_or(DbErr::Custom("Cannot find banner popup.".to_owned()))
-            .map(Into::into)?;
+        let banner_popup: entity::banner_popup::ActiveModel =
+            entity::banner_popup::Entity::find_by_id(id)
+                .one(db)
+                .await?
+                .ok_or(DbErr::Custom("Cannot find banner popup.".to_owned()))
+                .map(Into::into)?;
 
         entity::banner_popup::ActiveModel {
             id: banner_popup.id,
@@ -99,11 +100,12 @@ impl Mutation {
     }
 
     pub async fn delete_banner_popup(db: &DbConn, id: i32) -> Result<DeleteResult, DbErr> {
-        let banner_popup: entity::banner_popup::ActiveModel = entity::banner_popup::Entity::find_by_id(id)
-            .one(db)
-            .await?
-            .ok_or(DbErr::Custom("Cannot find banner popup.".to_owned()))
-            .map(Into::into)?;
+        let banner_popup: entity::banner_popup::ActiveModel =
+            entity::banner_popup::Entity::find_by_id(id)
+                .one(db)
+                .await?
+                .ok_or(DbErr::Custom("Cannot find banner popup.".to_owned()))
+                .map(Into::into)?;
 
         banner_popup.delete(db).await
     }

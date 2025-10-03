@@ -23,9 +23,12 @@ impl Query {
         // Fetch paginated posts
         paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
     }
-    
+
     // Banner Popup queries
-    pub async fn find_banner_popup_by_id(db: &DbConn, id: i32) -> Result<Option<entity::banner_popup::Model>, DbErr> {
+    pub async fn find_banner_popup_by_id(
+        db: &DbConn,
+        id: i32,
+    ) -> Result<Option<entity::banner_popup::Model>, DbErr> {
         entity::banner_popup::Entity::find_by_id(id).one(db).await
     }
 
