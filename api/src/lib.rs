@@ -44,7 +44,7 @@ async fn start() -> anyhow::Result<()> {
     let conn = Database::connect(db_url)
         .await
         .expect("Database connection failed");
-        
+
     // Try to run migrations, but handle cases where historical migrations are missing
     match migration::Migrator::up(&conn, None).await {
         Ok(_) => info!("Migrations completed successfully"),
@@ -53,7 +53,7 @@ async fn start() -> anyhow::Result<()> {
             // Continue execution even if some historical migrations are missing
         }
     }
-    
+
     // Run seeders after migrations
     match seeder::Migrator::up(&conn, None).await {
         Ok(_) => info!("Seeders completed successfully"),
