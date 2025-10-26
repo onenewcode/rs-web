@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Debug rs-web",
-            "type": "cppvsdbg",
+            // "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/rs-web",
             "args": [],

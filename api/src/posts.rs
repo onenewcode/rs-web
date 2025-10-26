@@ -9,6 +9,7 @@ use service::{
     Mutation as MutationCore, Query as QueryCore,
     sea_orm::{DatabaseConnection, TryIntoModel},
 };
+use tracing::{Instrument, info_span};
 
 // API handlers for Posts
 
@@ -91,5 +92,53 @@ pub async fn delete(
             StatusCode::INTERNAL_SERVER_ERROR,
             format!("Database error: {}", e),
         )),
+    }
+}
+
+pub async fn show_span(
+    State(conn): State<DatabaseConnection>,
+    Path(id): Path<i32>,
+) -> Result<Json<ApiResponse<post::Model>>, (StatusCode, Json<ApiResponse<post::Model>>)> {
+    // 创建一个 span 来追踪获取单个文章的操作
+    let span = info_span!("show_post", post_id = id);
+    let _enter = span.enter();
+
+    // 创建一个子 span 来追踪数据库查询操作
+    let result = {
+        let db_span = info_span!("query_post_from_db", post_id = id);
+        let _db_enter = db_span.enter();
+
+        // 在span内执行数据库查询
+        let result = QueryCore::find_post_by_id(&conn, id).await;
+
+        // 记录查询结果
+        match &result {
+            Ok(Some(_)) => tracing::info!("Database query successful"),
+            Ok(None) => tracing::warn!("Post not found in database"),
+            Err(e) => tracing::error!(error = %e, "Database query failed"),
+        }
+
+        result
+    };
+
+    match result {
+        Ok(Some(post)) => {
+            tracing::info!("Successfully fetched post");
+            Ok(ApiResponse::success(post))
+        }
+        Ok(None) => {
+            tracing::warn!("Post not found");
+            Err(ApiResponse::error(
+                StatusCode::NOT_FOUND,
+                "Post not found".to_string(),
+            ))
+        }
+        Err(e) => {
+            tracing::error!(error = %e, "Failed to fetch post from database");
+            Err(ApiResponse::error(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Database error: {}", e),
+            ))
+        }
     }
 }
