@@ -1,4 +1,4 @@
-use entity::post::*;
+use entity::{post::*, user};
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use sea_orm_migration::prelude::*;
 
@@ -10,6 +10,15 @@ impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         let db = manager.get_connection();
 
+        // 获取用户ID
+        let users = user::Entity::find().all(db).await?;
+        if users.is_empty() {
+            return Err(DbErr::Custom(
+                "No users found. Please seed users first.".to_string(),
+            ));
+        }
+        let user_id = users[0].id;
+
         let seed_data = vec![
             ("First Post", "This is the first post."),
             ("Second Post", "This is another post."),
@@ -19,6 +28,7 @@ impl MigrationTrait for Migration {
             let model = ActiveModel {
                 title: Set(title.to_string()),
                 text: Set(text.to_string()),
+                user_id: Set(user_id),
                 ..Default::default()
             };
             model.insert(db).await?;

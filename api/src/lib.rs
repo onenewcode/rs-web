@@ -8,8 +8,8 @@ use axum::{
     routing::{get, get_service},
 };
 use migration::MigratorTrait;
+use migration::sea_orm::Database;
 use opentelemetry::trace::TracerProvider;
-use service::sea_orm::Database;
 use std::env;
 use std::sync::OnceLock;
 use tower_cookies::CookieManagerLayer;

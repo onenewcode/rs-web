@@ -13,7 +13,16 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(pk_auto(Posts::Id))
                     .col(string(Posts::Title))
-                    .col(string(Posts::Text))
+                    .col(text(Posts::Text))
+                    .col(integer(Posts::UserId))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk-posts-user_id")
+                            .from(Posts::Table, Posts::UserId)
+                            .to(Users::Table, Users::Id)
+                            .on_delete(ForeignKeyAction::Cascade)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await
@@ -32,4 +41,11 @@ enum Posts {
     Id,
     Title,
     Text,
+    UserId,
+}
+
+#[derive(DeriveIden)]
+enum Users {
+    Table,
+    Id,
 }

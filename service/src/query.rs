@@ -1,4 +1,4 @@
-use ::entity::{post, post::Entity as Post};
+use ::entity::{post, post::Entity as Post, user, user::Entity as User};
 use sea_orm::*;
 
 pub struct Query;
@@ -22,5 +22,34 @@ impl Query {
 
         // Fetch paginated posts
         paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+    }
+
+    pub async fn find_user_by_id(db: &DbConn, id: i32) -> Result<Option<user::Model>, DbErr> {
+        User::find_by_id(id).one(db).await
+    }
+
+    pub async fn find_users_in_page(
+        db: &DbConn,
+        page: u64,
+        users_per_page: u64,
+    ) -> Result<(Vec<user::Model>, u64), DbErr> {
+        // Setup paginator
+        let paginator = User::find()
+            .order_by_asc(user::Column::Id)
+            .paginate(db, users_per_page);
+        let num_pages = paginator.num_pages().await?;
+
+        // Fetch paginated users
+        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+    }
+
+    pub async fn find_posts_by_user_id(
+        db: &DbConn,
+        user_id: i32,
+    ) -> Result<Vec<post::Model>, DbErr> {
+        Post::find()
+            .filter(post::Column::UserId.eq(user_id))
+            .all(db)
+            .await
     }
 }
