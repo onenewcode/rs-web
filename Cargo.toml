@@ -9,6 +9,7 @@ members = [".", "api", "entity", "migration", "seeder", "service", "uitls"]
 anyhow = "1.0.100"
 api = { path = "api" }
 axum = "0.8.5"
+bcrypt = "0.17.1"
 chrono = "0.4.42"
 entity = { path = "entity" }
 migration = { path = "migration" }
@@ -16,8 +17,8 @@ opentelemetry = "0.31.0"
 opentelemetry-stdout = "0.31.0"
 opentelemetry_sdk = "0.31.0"
 redis = { version = "0.32.6", features = ["tokio-comp"] }
-sea-orm = { git = "https://github.com/SeaQL/sea-orm.git", branch = "master" }
-sea-orm-migration = { git = "https://github.com/SeaQL/sea-orm.git", branch = "master" }
+sea-orm = { git = "https://github.com/SeaQL/sea-orm.git", rev = "f1f14d9"}
+sea-orm-migration = { git = "https://github.com/SeaQL/sea-orm.git",rev = "f1f14d9" }
 seeder = { path = "seeder" }
 serde = "1.0.228"
 serde_json = "1.0.145"
@@ -37,3 +38,4 @@ uitls = { path = "uitls" }
 [dependencies]
 api = { path = "api" }
 tokio =  "1"
+

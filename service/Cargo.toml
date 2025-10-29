@@ -7,9 +7,9 @@ edition = "2024"
 mock = ["sea-orm/mock"]
 
 [dependencies]
+chrono = { workspace = true }
 entity.workspace = true
 sea-orm = { workspace = true, features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"] }
-
 [dev-dependencies]
 tokio = { workspace = true, features = ["full"] }
 

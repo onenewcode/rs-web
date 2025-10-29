@@ -1,6 +1,6 @@
 mod prepare;
 
-use axum_example_service::{Mutation, Query};
+use service::{Mutation, Query};
 use entity::post;
 use prepare::prepare_mock_db;
 
@@ -27,6 +27,7 @@ async fn main() {
                 id: 0,
                 title: "Title D".to_owned(),
                 text: "Text D".to_owned(),
+                user_id: 1,
             },
         )
         .await
@@ -37,7 +38,8 @@ async fn main() {
             post::ActiveModel {
                 id: sea_orm::ActiveValue::Unchanged(6),
                 title: sea_orm::ActiveValue::Unchanged("Title D".to_owned()),
-                text: sea_orm::ActiveValue::Unchanged("Text D".to_owned())
+                text: sea_orm::ActiveValue::Unchanged("Text D".to_owned()),
+                user_id: sea_orm::ActiveValue::Unchanged(3),
             }
         );
     }
@@ -50,6 +52,7 @@ async fn main() {
                 id: 1,
                 title: "New Title A".to_owned(),
                 text: "New Text A".to_owned(),
+                user_id: 1,
             },
         )
         .await
@@ -61,6 +64,7 @@ async fn main() {
                 id: 1,
                 title: "New Title A".to_owned(),
                 text: "New Text A".to_owned(),
+                user_id: 1,
             }
         );
     }

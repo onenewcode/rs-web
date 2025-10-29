@@ -1,40 +1,38 @@
-use axum::{http::StatusCode, response::Json};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-// 统一响应结构
-#[derive(Serialize)]
+/// 统一API响应结构
+#[derive(Serialize, Deserialize)]
 pub struct ApiResponse<T> {
-    code: u16,
-    message: String,
-    data: Option<T>,
+    pub code: u16,
+    pub message: String,
+    pub data: Option<T>,
 }
 
 impl<T> ApiResponse<T> {
-    pub fn success(data: T) -> Json<ApiResponse<T>> {
-        Json(ApiResponse {
+    /// 创建成功的响应，包含数据
+    pub fn success_with_data(data: T) -> ApiResponse<T> {
+        ApiResponse {
             code: 200,
             message: "Success".to_string(),
             data: Some(data),
-        })
+        }
     }
 
-    pub fn success_with_message(message: String) -> Json<ApiResponse<()>> {
-        Json(ApiResponse {
+    pub fn success_with_message(message: String) -> ApiResponse<()> {
+        ApiResponse {
             code: 200,
             message,
             data: None,
-        })
+        }
     }
 
-    pub fn error(status: StatusCode, message: String) -> (StatusCode, Json<ApiResponse<T>>) {
-        (
-            status,
-            Json(ApiResponse {
-                code: status.as_u16(),
-                message,
-                data: None,
-            }),
-        )
+    /// 创建错误响应
+    pub fn error_with_message(message: String) -> ApiResponse<T> {
+        ApiResponse {
+            code: 500,
+            message,
+            data: None,
+        }
     }
 }
 

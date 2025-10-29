@@ -38,9 +38,9 @@ pub fn dotenv() -> Result<(), Box<dyn std::error::Error>> {
             let value = &line[pos + 1..];
 
             // Remove quotes from value if present
-            let value = if value.starts_with('"') && value.ends_with('"') && value.len() >= 2 {
-                &value[1..value.len() - 1]
-            } else if value.starts_with('\'') && value.ends_with('\'') && value.len() >= 2 {
+            let value = if (value.starts_with('"') || value.starts_with('\'')) 
+                && (value.ends_with('"') || value.ends_with('\'')) 
+                && value.len() >= 2 {
                 &value[1..value.len() - 1]
             } else {
                 value

@@ -27,7 +27,7 @@ impl MigrationTrait for Migration {
         for (title, text) in seed_data {
             let model = ActiveModel {
                 title: Set(title.to_string()),
-                text: Set(text.to_string()),
+                body: Set(text.to_string()),
                 user_id: Set(user_id),
                 ..Default::default()
             };

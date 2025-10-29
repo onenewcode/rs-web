@@ -10,7 +10,7 @@ impl Mutation {
     ) -> Result<post::ActiveModel, DbErr> {
         post::ActiveModel {
             title: Set(form_data.title.to_owned()),
-            text: Set(form_data.text.to_owned()),
+            body: Set(form_data.body.to_owned()),
             user_id: Set(form_data.user_id),
             ..Default::default()
         }
@@ -32,7 +32,7 @@ impl Mutation {
         post::ActiveModel {
             id: post.id,
             title: Set(form_data.title.to_owned()),
-            text: Set(form_data.text.to_owned()),
+            body: Set(form_data.body.to_owned()),
             user_id: Set(form_data.user_id),
         }
         .update(db)
@@ -60,6 +60,9 @@ impl Mutation {
         user::ActiveModel {
             name: Set(form_data.name.to_owned()),
             email: Set(form_data.email.to_owned()),
+            password: Set(form_data.password.to_owned()),
+            created_at: Set(form_data.created_at),
+            updated_at: Set(form_data.updated_at),
             ..Default::default()
         }
         .save(db)
@@ -81,6 +84,9 @@ impl Mutation {
             id: user.id,
             name: Set(form_data.name.to_owned()),
             email: Set(form_data.email.to_owned()),
+            password: Set(form_data.password.to_owned()),
+            created_at: Set(form_data.created_at),
+            updated_at: Set(form_data.updated_at),
         }
         .update(db)
         .await

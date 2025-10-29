@@ -14,6 +14,9 @@ impl MigrationTrait for Migration {
                     .col(pk_auto(Users::Id))
                     .col(string(Users::Name))
                     .col(string(Users::Email).unique_key())
+                    .col(string(Users::Password))
+                    .col(timestamp_with_time_zone(Users::CreatedAt))
+                    .col(timestamp_with_time_zone(Users::UpdatedAt))
                     .to_owned(),
             )
             .await
@@ -32,4 +35,7 @@ enum Users {
     Id,
     Name,
     Email,
+    Password,
+    CreatedAt,
+    UpdatedAt,
 }
