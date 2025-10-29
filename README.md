@@ -116,6 +116,10 @@ graph TD
    - 基于 Tera 模板引擎的前端界面
    - 静态文件服务（CSS、图片等）
 
+## 测试
+
+cargo test -p service --features service/mock
+
 ## 注意
 
 windows 中lldb中断点调试对tokio中支持不完全
