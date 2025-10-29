@@ -60,6 +60,9 @@ impl Mutation {
         user::ActiveModel {
             name: Set(form_data.name.to_owned()),
             email: Set(form_data.email.to_owned()),
+            password: Set(form_data.password.to_owned()),
+            created_at: Set(form_data.created_at),
+            updated_at: Set(form_data.updated_at),
             ..Default::default()
         }
         .save(db)
@@ -81,6 +84,9 @@ impl Mutation {
             id: user.id,
             name: Set(form_data.name.to_owned()),
             email: Set(form_data.email.to_owned()),
+            password: Set(form_data.password.to_owned()),
+            created_at: Set(form_data.created_at),
+            updated_at: Set(form_data.updated_at),
         }
         .update(db)
         .await

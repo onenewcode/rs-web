@@ -9,6 +9,7 @@ path = "src/lib.rs"
 
 [dependencies]
 async-std = { version = "1", features = ["attributes", "tokio1"] }
+bcrypt.workspace = true
 chrono = { workspace = true }
 entity.workspace = true
 migration.workspace = true

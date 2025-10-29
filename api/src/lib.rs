@@ -1,11 +1,12 @@
 mod flash;
 mod posts;
+mod users;
 mod response;
 
 use axum::{
     Router,
     http::StatusCode,
-    routing::{get, get_service},
+    routing::{get, get_service, post, put, delete},
 };
 use migration::MigratorTrait;
 use migration::sea_orm::Database;
@@ -145,6 +146,12 @@ pub async fn start() -> anyhow::Result<()> {
         .route(
             "/posts/{id}",
             get(posts::show).post(posts::update).delete(posts::delete),
+        )
+        // 用户相关路由
+        .route("/users", get(users::list).post(users::create))
+        .route(
+            "/users/{id}",
+            get(users::show).put(users::update).delete(users::delete),
         )
         // 测试 span 路由
         .route("/span/{id}", get(posts::show_span))
