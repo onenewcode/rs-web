@@ -1,3 +1,4 @@
+mod comments;
 mod flash;
 mod posts;
 mod response;
@@ -6,7 +7,7 @@ mod users;
 use axum::{
     Router,
     http::StatusCode,
-    routing::{get, get_service},
+    routing::{get, get_service, post},
 };
 use migration::sea_orm::Database;
 use opentelemetry::trace::TracerProvider;
@@ -154,6 +155,21 @@ pub async fn start() -> anyhow::Result<()> {
             "/users/{id}",
             get(users::show).put(users::update).delete(users::delete),
         )
+        // 用户的文章路由
+        .route("/users/{user_id}/posts", get(posts::list_by_user))
+        // 评论相关路由
+        .route(
+            "/posts/{post_id}/comments",
+            get(comments::list).post(comments::create),
+        )
+        .route(
+            "/posts/{post_id}/comments/{comment_id}",
+            post(comments::update).delete(comments::delete),
+        )
+        // 搜索路由
+        .route("/search/posts", get(posts::search))
+        // 统计路由
+        .route("/statistics", get(posts::statistics))
         // 测试 span 路由
         .route("/span/{id}", get(posts::show_span))
         // 静态文件服务

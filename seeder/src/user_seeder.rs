@@ -1,8 +1,8 @@
+use bcrypt::{DEFAULT_COST, hash};
+use chrono::Utc;
 use entity::user::*;
 use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, Set};
 use sea_orm_migration::prelude::*;
-use bcrypt::{hash, DEFAULT_COST};
-use chrono::Utc;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -15,7 +15,7 @@ impl MigrationTrait for Migration {
 
         let seed_data = vec![
             ("Alice", "alice@example.com", "password123"),
-            ("Bob", "bob@example.com", "password456")
+            ("Bob", "bob@example.com", "password456"),
         ];
 
         for (name, email, password) in seed_data {
