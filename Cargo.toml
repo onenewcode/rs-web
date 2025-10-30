@@ -3,8 +3,7 @@ name = "rs-web"
 version = "0.1.0"
 edition = "2024"
 
-[workspace]
-members = [".", "api", "entity", "migration", "seeder", "service", "uitls"]
+
 [workspace.dependencies]
 anyhow = "1.0.100"
 api = { path = "api" }
@@ -38,4 +37,3 @@ uitls = { path = "uitls" }
 [dependencies]
 api = { path = "api" }
 tokio =  "1"
-

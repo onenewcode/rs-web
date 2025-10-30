@@ -13,7 +13,7 @@ migration.workspace = true
 opentelemetry.workspace = true
 opentelemetry-stdout.workspace = true
 opentelemetry_sdk.workspace = true
-sea-orm = { workspace = true, features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print"] }
+sea-orm = { workspace = true, features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print","schema-sync","entity-registry"] }
 seeder.workspace = true
 serde = { workspace = true }
 serde_json = { workspace = true }

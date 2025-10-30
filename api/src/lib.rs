@@ -1,14 +1,13 @@
 mod flash;
 mod posts;
-mod users;
 mod response;
+mod users;
 
 use axum::{
     Router,
     http::StatusCode,
     routing::{get, get_service},
 };
-use migration::MigratorTrait;
 use migration::sea_orm::Database;
 use opentelemetry::trace::TracerProvider;
 use std::env;
@@ -114,17 +113,19 @@ pub async fn start() -> anyhow::Result<()> {
         .await
         .expect("Database connection failed");
 
+    // 新版数据库迁移 需要开启 schema-sync 和 entity-registry
+    conn.get_schema_registry("entity::*").sync(&conn).await?;
     // 运行数据库迁移
-    match migration::Migrator::up(&conn, None).await {
-        Ok(_) => info!("Migrations completed successfully"),
-        Err(e) => warn!("Migration warning: {}", e),
-    }
+    // match migration::Migrator::up(&conn, None).await {
+    //     Ok(_) => info!("Migrations completed successfully"),
+    //     Err(e) => warn!("Migration warning: {}", e),
+    // }
 
     // 运行数据填充
-    match seeder::Migrator::up(&conn, None).await {
-        Ok(_) => info!("Seeders completed successfully"),
-        Err(e) => warn!("Seeding warning: {}", e),
-    }
+    // match seeder::Migrator::up(&conn, None).await {
+    //     Ok(_) => info!("Seeders completed successfully"),
+    //     Err(e) => warn!("Seeding warning: {}", e),
+    // }
 
     // 配置 HTTP 请求追踪中间件
     // 使用自定义配置来获取更详细的请求日志信息
