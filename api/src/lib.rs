@@ -1,13 +1,13 @@
 mod comments;
 mod flash;
 mod posts;
+mod request;
 mod response;
 mod users;
-
 use axum::{
     Router,
     http::StatusCode,
-    routing::{get, get_service, post},
+    routing::{get, get_service, post, put},
 };
 use migration::sea_orm::Database;
 use opentelemetry::trace::TracerProvider;
@@ -145,16 +145,13 @@ pub async fn start() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/posts", get(posts::list).post(posts::create))
-        .route(
-            "/posts/{id}",
-            get(posts::show).post(posts::update).delete(posts::delete),
-        )
+        // .route(
+        //     "/posts/{id}",
+        //     get(posts::show).post(posts::update).delete(posts::delete),
+        // )
         // 用户相关路由
-        .route("/users", get(users::list).post(users::create))
-        .route(
-            "/users/{id}",
-            get(users::show).put(users::update).delete(users::delete),
-        )
+        .route("/users", post(users::create))
+        .route("/users/{id}", put(users::update).delete(users::delete))
         // 用户的文章路由
         .route("/users/{user_id}/posts", get(posts::list_by_user))
         // 评论相关路由

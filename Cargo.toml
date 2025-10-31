@@ -32,6 +32,7 @@ tracing-opentelemetry = "0.32.0"
 # 配置和管理 tracing 所产生的日志和追踪数据的收集、格式化以及输出等操作
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uitls = { path = "uitls" }
+# tower-sessions = "0.14.0"
 
 [dependencies]
 api = { path = "api" }

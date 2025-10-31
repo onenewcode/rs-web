@@ -8,8 +8,8 @@ use sea_orm::{DatabaseConnection, TryIntoModel};
 use serde::{Deserialize, Serialize};
 use service::{Mutation as MutationCore, Query as QueryCore};
 
-use super::response::{ApiResponse, Params};
-
+use super::request::PageParams;
+use super::response::ApiResponse;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CommentWithAuthor {
     #[serde(flatten)]
@@ -22,13 +22,13 @@ pub struct CommentWithAuthor {
 pub async fn list(
     State(conn): State<DatabaseConnection>,
     Path(post_id): Path<i32>,
-    Query(params): Query<Params>,
+    Query(params): Query<PageParams>,
 ) -> Result<
     Json<ApiResponse<Vec<CommentWithAuthor>>>,
     (StatusCode, Json<ApiResponse<Vec<CommentWithAuthor>>>),
 > {
     let page = params.page.unwrap_or(1);
-    let comments_per_page = params.posts_per_page.unwrap_or(5);
+    let comments_per_page = params.size.unwrap_or(5);
 
     match QueryCore::find_comments_by_post_id_in_page(&conn, post_id, page, comments_per_page).await
     {

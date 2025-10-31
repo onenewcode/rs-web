@@ -1,6 +1,8 @@
-use super::response::{ApiResponse, Params};
+use super::request::PageParams;
+use super::response::ApiResponse;
+use super::response::PageRes;
 use axum::{
-    extract::{Form, Path, Query, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     response::Json,
 };
@@ -10,80 +12,28 @@ use serde::{Deserialize, Serialize};
 use service::{Mutation as MutationCore, Query as QueryCore};
 use tracing::info_span;
 
-#[derive(Debug, Clone, Serialize)]
-pub struct PostWithAuthor {
-    #[serde(flatten)]
-    pub post: post::ModelEx,
-    pub author_name: String,
-}
-
-// API handlers for Posts
-
 pub async fn list(
     State(conn): State<DatabaseConnection>,
-    Query(params): Query<Params>,
-) -> Result<
-    Json<ApiResponse<Vec<PostWithAuthor>>>,
-    (StatusCode, Json<ApiResponse<Vec<PostWithAuthor>>>),
-> {
-    let page = params.page.unwrap_or(1);
-    let posts_per_page = params.posts_per_page.unwrap_or(5);
-
-    todo!()
-}
-
-pub async fn show(
-    State(conn): State<DatabaseConnection>,
-    Path(id): Path<i32>,
-) -> Result<Json<ApiResponse<PostWithAuthor>>, (StatusCode, Json<ApiResponse<PostWithAuthor>>)> {
-    match QueryCore::find_post_by_id(&conn, id).await {
-        Ok(Some(post)) => match QueryCore::find_user_by_id(&conn, post.user_id).await {
-            Ok(Some(author)) => {
-                let post_with_author = PostWithAuthor {
-                    post,
-                    author_name: author.name,
-                };
-                Ok(Json(ApiResponse::success_with_data(post_with_author)))
-            }
-            Ok(None) => {
-                let error_response = ApiResponse::<PostWithAuthor>::error_with_message(
-                    "Author not found".to_string(),
-                );
-                Err((StatusCode::NOT_FOUND, Json(error_response)))
-            }
-            Err(e) => {
-                let error_response = ApiResponse::<PostWithAuthor>::error_with_message(format!(
-                    "Database error: {}",
-                    e
-                ));
-                Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)))
-            }
-        },
-        Ok(None) => {
-            let error_response =
-                ApiResponse::<PostWithAuthor>::error_with_message("Post not found".to_string());
-            Err((StatusCode::NOT_FOUND, Json(error_response)))
-        }
+    Query(page_params): Query<PageParams>,
+) -> Result<Json<ApiResponse<PageRes<Vec<post::Model>>>>, (StatusCode, Json<ApiResponse<()>>)> {
+    let page = page_params.page.unwrap_or(1);
+    let size = page_params.size.unwrap_or(10);
+    match QueryCore::find_posts_in_page(&conn, page, size).await {
+        Ok(posts) => Ok(Json(ApiResponse::success_with_data(PageRes {
+            data: posts.0,
+            total: posts.1,
+        }))),
         Err(e) => {
             let error_response =
-                ApiResponse::<PostWithAuthor>::error_with_message(format!("Database error: {}", e));
+                ApiResponse::<()>::error_with_message(format!("Database error: {}", e));
             Err((StatusCode::INTERNAL_SERVER_ERROR, Json(error_response)))
         }
     }
 }
-
 pub async fn create(
     State(conn): State<DatabaseConnection>,
-    Form(input): Form<post::Model>,
-) -> Result<Json<ApiResponse<PostWithAuthor>>, (StatusCode, Json<ApiResponse<PostWithAuthor>>)> {
-    todo!()
-}
-
-pub async fn update(
-    State(conn): State<DatabaseConnection>,
-    Path(id): Path<i32>,
-    Form(input): Form<post::Model>,
-) -> Result<Json<ApiResponse<PostWithAuthor>>, (StatusCode, Json<ApiResponse<PostWithAuthor>>)> {
+    Json(user): Json<post::Model>,
+) -> Result<Json<ApiResponse<String>>, (StatusCode, Json<ApiResponse<()>>)> {
     todo!()
 }
 
@@ -170,7 +120,7 @@ pub async fn list_by_user(
 pub struct SearchParams {
     pub q: String,
     #[serde(flatten)]
-    pub pagination: Params,
+    pub pagination: PageParams,
 }
 
 pub async fn search(
@@ -179,7 +129,7 @@ pub async fn search(
 ) -> Result<Json<ApiResponse<Vec<post::Model>>>, (StatusCode, Json<ApiResponse<Vec<post::Model>>>)>
 {
     let page = params.pagination.page.unwrap_or(1);
-    let posts_per_page = params.pagination.posts_per_page.unwrap_or(5);
+    let posts_per_page = params.pagination.size.unwrap_or(5);
     let keyword = params.q.trim();
 
     if keyword.is_empty() {

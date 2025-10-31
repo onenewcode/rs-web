@@ -1,5 +1,10 @@
+mod delete;
+mod insert;
 mod mutation;
 mod query;
-
+mod save;
+pub use delete::*;
+pub use insert::*;
 pub use mutation::*;
 pub use query::*;
+pub use save::*;
