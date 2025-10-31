@@ -15,12 +15,12 @@ impl Query {
     pub async fn find_posts_in_page(
         db: &DbConn,
         page: u64,
-        posts_per_page: u64,
+        size: u64,
     ) -> Result<(Vec<post::Model>, u64), DbErr> {
         // Setup paginator
         let paginator = Post::find()
             .order_by_asc(post::Column::Id)
-            .paginate(db, posts_per_page);
+            .paginate(db, size);
         let num_pages = paginator.num_pages().await?;
 
         // Fetch paginated posts

@@ -7,12 +7,9 @@
 //! - 更新用户信息
 //! - 删除用户
 
-use crate::response::ApiResponse;
+use crate::{request::{Credentials, AuthSession}, response::ApiResponse};
 use axum::{
-    Json,
-    extract::{Path, State},
-    http::StatusCode,
-    response::IntoResponse,
+    Form, Json, extract::{Path, State}, http::StatusCode, response::{IntoResponse, Redirect}
 };
 use bcrypt::{DEFAULT_COST, hash};
 use chrono::{DateTime, Utc};
@@ -248,3 +245,25 @@ pub async fn delete(
         }
     }
 }
+
+pub async fn login(
+        mut auth_session: AuthSession,
+        Form(creds): Form<Credentials>,
+    ) -> impl IntoResponse {
+        let user = match auth_session.authenticate(creds.clone()).await {
+            Ok(Some(user)) => user,
+            Ok(None) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+            
+            Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+        };
+
+        if auth_session.login(&user).await.is_err() {
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+        }
+
+        if let Some(ref next) = creds.next {
+            Redirect::to(next).into_response()
+        } else {
+            Redirect::to("/").into_response()
+        }
+    }

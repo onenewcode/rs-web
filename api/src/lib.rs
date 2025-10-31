@@ -1,9 +1,9 @@
 mod comments;
 mod flash;
 mod posts;
+mod request;
 mod response;
 mod users;
-
 use axum::{
     Router,
     http::StatusCode,
@@ -145,10 +145,10 @@ pub async fn start() -> anyhow::Result<()> {
 
     let app = Router::new()
         .route("/posts", get(posts::list).post(posts::create))
-        .route(
-            "/posts/{id}",
-            get(posts::show).post(posts::update).delete(posts::delete),
-        )
+        // .route(
+        //     "/posts/{id}",
+        //     get(posts::show).post(posts::update).delete(posts::delete),
+        // )
         // 用户相关路由
         .route("/users", get(users::list).post(users::create))
         .route(

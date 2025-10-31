@@ -35,9 +35,9 @@ impl<T> ApiResponse<T> {
         }
     }
 }
-
-#[derive(serde::Deserialize)]
-pub struct Params {
-    pub page: Option<u64>,
-    pub posts_per_page: Option<u64>,
+/// 统一分页统一响应
+#[derive(Serialize, Deserialize)]
+pub struct PageRes<T> {
+    pub data: T,
+    pub total: u64,
 }
