@@ -108,6 +108,7 @@ dependencies = [
  "bcrypt",
  "chrono",
  "entity",
+ "middleware",
  "migration",
  "opentelemetry",
  "opentelemetry-stdout",
@@ -1709,6 +1710,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
 
 [[package]]
+name = "middleware"
+version = "0.1.0"
+dependencies = [
+ "http",
+ "tokio",
+ "tower",
+ "tracing",
+]
+
+[[package]]
 name = "migration"
 version = "0.1.0"
 dependencies = [
@@ -2583,9 +2594,9 @@ dependencies = [
 
 [[package]]
 name = "sea-query"
-version = "1.0.0-rc.16"
+version = "1.0.0-rc.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab2bc1fe7bb8366b536efc69a68e48321671a1030c565b206dc1a1a5ce1cf815"
+checksum = "30d190945ff6b2914ef0631c1933ef67ee142b15f00b72d40bf241147d24b522"
 dependencies = [
  "bigdecimal",
  "chrono",

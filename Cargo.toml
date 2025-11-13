@@ -2,7 +2,16 @@
 name = "rs-web"
 version = "0.1.0"
 edition = "2024"
-
+[workspace]
+members = [
+    "api",
+    "entity",
+    "middleware",
+    "migration",
+    "seeder",
+    "service",
+    "uitls",
+]
 [workspace.dependencies]
 anyhow = "1.0.100"
 api = { path = "api" }
@@ -10,6 +19,9 @@ axum = "0.8.5"
 bcrypt = "0.17.1"
 chrono = "0.4.42"
 entity = { path = "entity" }
+# tower-sessions = "0.14.0"
+http = "1"
+middleware = { path = "middleware" }
 migration = { path = "migration" }
 opentelemetry = "0.31.0"
 opentelemetry-stdout = "0.31.0"
@@ -32,8 +44,8 @@ tracing-opentelemetry = "0.32.0"
 # 配置和管理 tracing 所产生的日志和追踪数据的收集、格式化以及输出等操作
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 uitls = { path = "uitls" }
-# tower-sessions = "0.14.0"
-
 [dependencies]
 api = { path = "api" }
 tokio =  "1"
+
+[dev-dependencies]

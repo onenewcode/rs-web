@@ -9,6 +9,7 @@ use axum::{
     http::StatusCode,
     routing::{get, get_service, post, put},
 };
+use middleware::LoggingLayer;
 use migration::sea_orm::Database;
 use opentelemetry::trace::TracerProvider;
 use std::env;
@@ -183,6 +184,7 @@ pub async fn start() -> anyhow::Result<()> {
                 )
             }),
         )
+        .layer(LoggingLayer::new())
         // 添加增强的追踪中间件
         .layer(trace_layer)
         // 添加 Cookie 管理中间件
