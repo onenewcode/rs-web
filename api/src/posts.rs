@@ -31,8 +31,8 @@ pub async fn list(
     }
 }
 pub async fn create(
-    State(conn): State<DatabaseConnection>,
-    Json(user): Json<post::Model>,
+    State(_conn): State<DatabaseConnection>,
+    Json(_user): Json<post::Model>,
 ) -> Result<Json<ApiResponse<String>>, (StatusCode, Json<ApiResponse<()>>)> {
     todo!()
 }

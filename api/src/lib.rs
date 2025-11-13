@@ -7,9 +7,10 @@ mod users;
 use axum::{
     Router,
     http::StatusCode,
+    middleware::from_fn,
     routing::{get, get_service, post, put},
 };
-use middleware::LoggingLayer;
+use middleware::tower::LoggingLayer;
 use migration::sea_orm::Database;
 use opentelemetry::trace::TracerProvider;
 use std::env;
@@ -187,6 +188,7 @@ pub async fn start() -> anyhow::Result<()> {
         .layer(LoggingLayer::new())
         // 添加增强的追踪中间件
         .layer(trace_layer)
+        .layer(from_fn(middleware::axum::auth))
         // 添加 Cookie 管理中间件
         .layer(CookieManagerLayer::new())
         // 注入数据库连接作为应用状态
