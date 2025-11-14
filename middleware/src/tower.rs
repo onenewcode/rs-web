@@ -1,17 +1,44 @@
 use http::{HeaderValue, Request, Response};
-use std::collections::HashMap;
+use pin_project_lite::pin_project;
 use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tower::{Layer, Service};
 
+pin_project! {
+    /// Response future for [`CookieManager`].
+    #[derive(Debug)]
+    pub struct ResponseFuture<F> {
+        #[pin]
+        pub(crate) future: F,
+        pub(crate) data: SharedData,
+    }
+}
+
+impl<F, ResBody, E> Future for ResponseFuture<F>
+where
+    F: Future<Output = Result<Response<ResBody>, E>>,
+{
+    type Output = F::Output;
+
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        let this = self.project();
+        let mut res = std::task::ready!(this.future.poll(cx)?);
+        res.headers_mut().insert(
+            "tower-Request-ID",
+            HeaderValue::from_str(&this.data.request_id).unwrap(),
+        );
+
+        Poll::Ready(Ok(res))
+    }
+}
+
 // 定义共享数据类型
 #[derive(Clone, Debug)]
 pub struct SharedData {
     pub user_id: Option<String>,
     pub request_id: String,
-    pub metadata: HashMap<String, String>,
 }
 
 impl Default for SharedData {
@@ -30,7 +57,6 @@ impl SharedData {
                 .unwrap_or_default()
                 .as_nanos()
                 .to_string(),
-            metadata: HashMap::new(),
         }
     }
 }
@@ -48,8 +74,7 @@ where
 {
     type Response = Response<R>;
     type Error = S::Error;
-    type Future =
-        Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send + 'static>>;
+    type Future = ResponseFuture<S::Future>;
 
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
@@ -57,43 +82,17 @@ where
 
     fn call(&mut self, mut request: Request<R>) -> Self::Future {
         // 创建共享数据并获取请求ID
-        let shared_data = SharedData::new();
-        let request_id = shared_data.request_id.clone();
+        let mut shared_data = SharedData::new();
+        shared_data.request_id = "111".to_string();
 
         // 将共享数据添加到请求扩展中
-        request.extensions_mut().insert(shared_data);
+        request.extensions_mut().insert(shared_data.clone());
 
-        // 获取内部服务的 future
-        let inner_future = self.inner.call(request);
-
-        // 创建一个 future 来处理响应
-        Box::pin(async move {
-            let mut response = inner_future.await?;
-
-            // 预计算时间戳
-            let processed_at = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_secs()
-                .to_string();
-
-            // 添加自定义头部到响应，使用更高效的方式
-            let headers = response.headers_mut();
-            headers.insert(
-                "tower-Request-Id",
-                HeaderValue::from_str(&request_id).unwrap(),
-            );
-            headers.insert(
-                "tower-Middleware",
-                HeaderValue::from_static("LoggingService"),
-            );
-            headers.insert(
-                "tower-Processed-At",
-                HeaderValue::from_str(&processed_at).unwrap(),
-            );
-
-            Ok(response)
-        })
+        // 创建响应 future
+        ResponseFuture {
+            future: self.inner.call(request),
+            data: shared_data,
+        }
     }
 }
 
